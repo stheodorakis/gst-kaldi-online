@@ -1,6 +1,7 @@
 all:
 
-KALDI_ROOT?=/home/tanel/tools/kaldi-trunk
+include ../../path.mk
+KALDI_ROOT?=$(KALDI_SRC_PATH)/../
 
 ifeq ("$(wildcard $(KALDI_ROOT)/src/kaldi.mk)","")
 $(error Cannot find Kaldi's makefile $(KALDI_ROOT)/src/kaldi.mk. \
@@ -27,7 +28,7 @@ EXTRA_LDLIBS += -L$(FSTROOT)/lib -lkaldi-online2 -lkaldi-lat -lkaldi-decoder -lk
  -lkaldi-gmm -lkaldi-hmm \
  -lkaldi-tree -lkaldi-matrix  -lkaldi-util -lkaldi-base -lkaldi-thread -lkaldi-lm -lfstscript -lkaldi-nnet2 -lkaldi-cudamatrix -lkaldi-ivector
 
-OBJFILES = gstkaldinnet2onlinedecoder.o simple-options-gst.o gst-audio-source.o kaldimarshal.o
+OBJFILES = gstkaldinnet2onlinedecoder.o gstkaldigmm2onlinedecoder.o simple-options-gst.o gst-audio-source.o kaldimarshal.o online-gmm-decoding-ext.o
 
 LIBNAME=gstkaldionline2
 
@@ -52,6 +53,8 @@ else
     EXTRA_LDLIBS +=  -Wl,-soname=$(LIBFILE) -Wl,--no-as-needed -Wl,-rpath=$(KALDILIBDIR) -lrt -pthread
 endif
 
+GSTLIBDIR = /usr/local/lib/
+LDFLAGS += -L$(GSTLIBDIR)
 
 $(LIBFILE): $(OBJFILES)
 	$(CXX) -shared -DPIC -o $(LIBFILE) -L$(KALDILIBDIR) $(EXTRA_LDLIBS) $(LDLIBS) $(LDFLAGS) \

@@ -1,4 +1,4 @@
-// gstkaldinnet2onlinedecoder.h
+// gstkaldigmm2onlinedecoder.h
 
 // Copyright 2014 Tanel Alumäe
 // Copyright 2015 University of Sheffield (author: Ricard Marxer <r.marxer@sheffield.ac.uk>)
@@ -18,16 +18,17 @@
 // See the Apache 2 License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef KALDI_SRC_GSTKALDINNET2ONLINEDECODER_H_
-#define KALDI_SRC_GSTKALDINNET2ONLINEDECODER_H_
+#ifndef KALDI_SRC_GSTKALDIGMM2ONLINEDECODER_H_
+#define KALDI_SRC_GSTKALDIGMM2ONLINEDECODER_H_
 
 #include <gst/gst.h>
 
 #include "./simple-options-gst.h"
 #include "./gst-audio-source.h"
+#include "./online-gmm-decoding-ext.h"
 
-#include "online2/online-nnet2-decoding-threaded.h"
-#include "online2/online-nnet2-decoding.h"
+#include "online2/online-gmm-decoding.h"
+
 
 #include "online2/onlinebin-util.h"
 #include "online2/online-timing.h"
@@ -42,21 +43,21 @@ namespace kaldi {
 G_BEGIN_DECLS
 
 /* #defines don't like whitespacey bits */
-#define GST_TYPE_KALDINNET2ONLINEDECODER \
-  (gst_kaldinnet2onlinedecoder_get_type())
-#define GST_KALDINNET2ONLINEDECODER(obj) \
-  (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_KALDINNET2ONLINEDECODER,Gstkaldinnet2onlinedecoder))
-#define GST_KALDINNET2ONLINEDECODER_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_KALDINNET2ONLINEDECODER,Gstkaldinnet2onlinedecoderClass))
-#define GST_IS_KALDINNET2ONLINEDECODER(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_KALDINNET2ONLINEDECODER))
-#define GST_IS_KALDINNET2ONLINEDECODER_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_KALDINNET2ONLINEDECODER))
+#define GST_TYPE_KALDIGMM2ONLINEDECODER \
+  (gst_kaldigmm2onlinedecoder_get_type())
+#define GST_KALDIGMM2ONLINEDECODER(obj) \
+  (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_KALDIGMM2ONLINEDECODER,Gstkaldigmm2onlinedecoder))
+#define GST_KALDIGMM2ONLINEDECODER_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_KALDIGMM2ONLINEDECODER,Gstkaldigmm2onlinedecoderClass))
+#define GST_IS_KALDIGMM2ONLINEDECODER(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_KALDIGMM2ONLINEDECODER))
+#define GST_IS_KALDIGMM2ONLINEDECODER_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_KALDIGMM2ONLINEDECODER))
 
-typedef struct _Gstkaldinnet2onlinedecoder Gstkaldinnet2onlinedecoder;
-typedef struct _Gstkaldinnet2onlinedecoderClass Gstkaldinnet2onlinedecoderClass;
+typedef struct _Gstkaldigmm2onlinedecoder Gstkaldigmm2onlinedecoder;
+typedef struct _Gstkaldigmm2onlinedecoderClass Gstkaldigmm2onlinedecoderClass;
 
-struct _Gstkaldinnet2onlinedecoder {
+struct _Gstkaldigmm2onlinedecoder {
   GstElement element;
 
   GstPad *sinkpad, *srcpad;
@@ -78,13 +79,14 @@ struct _Gstkaldinnet2onlinedecoder {
 
   SimpleOptionsGst *simple_options;
   OnlineEndpointConfig *endpoint_config;
-  OnlineNnet2FeaturePipelineConfig *feature_config;
-  OnlineNnet2DecodingThreadedConfig *nnet2_decoding_threaded_config;
-  OnlineNnet2DecodingConfig *nnet2_decoding_config;
+  OnlineFeaturePipelineCommandLineConfig *feature_config_cmd;
+  OnlineFeaturePipelineConfig *feature_config;
+  //OnlineGmm2DecodingThreadedConfig *gmm2_decoding_threaded_config;
+  OnlineGmmDecodingConfig *gmm2_decoding_config;
+  OnlineCmvnState *cmvn_state;
 
-  OnlineNnet2FeaturePipelineInfo *feature_info;
   TransitionModel *trans_model;
-  nnet2::AmNnet *nnet;
+  AmDiagGmm *gmm;
   fst::Fst<fst::StdArc> *decode_fst;
   fst::SymbolTable *word_syms;
   fst::SymbolTable *phone_syms;
@@ -95,7 +97,7 @@ struct _Gstkaldinnet2onlinedecoder {
   float traceback_period_in_secs;
   bool use_threaded_decoder;
   guint num_nbest;
-  OnlineIvectorExtractorAdaptationState *adaptation_state;
+  OnlineGmmAdaptationState *adaptation_state;
   float segment_start_time;
   float total_time_decoded;
 
@@ -107,15 +109,15 @@ struct _Gstkaldinnet2onlinedecoder {
   ConstArpaLm *big_lm_const_arpa;
 };
 
-struct _Gstkaldinnet2onlinedecoderClass {
+struct _Gstkaldigmm2onlinedecoderClass {
   GstElementClass parent_class;
   void (*partial_result)(GstElement *element, const gchar *result_str);
   void (*final_result)(GstElement *element, const gchar *result_str);
   void (*full_final_result)(GstElement *element, const gchar *result_str);
 };
 
-GType gst_kaldinnet2onlinedecoder_get_type(void);
+GType gst_kaldigmm2onlinedecoder_get_type(void);
 
 G_END_DECLS
 }
-#endif  // KALDI_SRC_GSTKALDINNET2ONLINEDECODER_H_
+#endif  // KALDI_SRC_GSTKALDIGMM2ONLINEDECODER_H_
