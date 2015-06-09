@@ -13,7 +13,8 @@ ifneq ($(KALDI_FLAVOR), dynamic)
 $(error Kaldi must compiled with dynamic libraries support. Run configure with --shared flag. )
 endif
 
-CXXFLAGS += -I$(KALDI_ROOT)/src
+JSINCL = /usr/local/include/
+CXXFLAGS += -I$(KALDI_ROOT)/src -I$(JSINCL)
 
 EXTRA_CXXFLAGS += $(shell pkg-config --cflags gstreamer-1.0)
 EXTRA_CXXFLAGS += $(shell pkg-config --cflags glib-2.0)

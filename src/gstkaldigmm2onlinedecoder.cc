@@ -876,10 +876,10 @@ static void gst_kaldigmm2onlinedecoder_scale_lattice(
     BaseFloat inv_acoustic_scale = 1.0;
     if (filter->use_threaded_decoder) {
       GST_ERROR_OBJECT(filter, "Thread feature is not implemented yet for GMMs.");
-      inv_acoustic_scale = 1.0 / filter->
-          gmm2_decoding_threaded_config->acoustic_scale;
+      // inv_acoustic_scale = 1.0 / filter->
+      //     gmm2_decoding_threaded_config->acoustic_scale;
     } else {
-      inv_acoustic_scale = 1.0 / filter->gmm2_decoding_config.acoustic_scale;
+      inv_acoustic_scale = 1.0 / filter->gmm2_decoding_config->acoustic_scale;
     }
 
     fst::ScaleLattice(fst::AcousticLatticeScale(inv_acoustic_scale), &clat);
@@ -1283,7 +1283,7 @@ static void gst_kaldigmm2onlinedecoder_unthreaded_decode_segment(Gstkaldigmm2onl
       decoder.FeaturePipeline().InputFinished();
     }
     decoder.AdvanceDecoding();
-    GST_DEBUG_OBJECT(filter, "%d frames decoded", decoder.NumFramesDecoded());
+    //GST_DEBUG_OBJECT(filter, "%d frames decoded", decoder.NumFramesDecoded());
     num_seconds_decoded += 1.0 * wave_part.Dim() / filter->sample_rate;
     filter->total_time_decoded += 1.0 * wave_part.Dim() / filter->sample_rate;
     GST_DEBUG_OBJECT(filter, "Total amount of audio processed: %f seconds", filter->total_time_decoded);
@@ -1301,8 +1301,7 @@ static void gst_kaldigmm2onlinedecoder_unthreaded_decode_segment(Gstkaldigmm2onl
       break;
     }
 
-    if ((num_seconds_decoded - last_traceback > traceback_period_secs)
-        && (decoder.NumFramesDecoded() > 0)) {
+    if ((num_seconds_decoded - last_traceback > traceback_period_secs)) {
       Lattice lat;
       decoder.GetBestPath(false, &lat);
       gst_kaldigmm2onlinedecoder_partial_result(filter, lat);
@@ -1330,7 +1329,7 @@ static void gst_kaldigmm2onlinedecoder_unthreaded_decode_segment(Gstkaldigmm2onl
     gst_kaldigmm2onlinedecoder_final_result(filter, clat, &num_words);
     if (num_words > 1) {
       // Only update adaptation state if the utterance contained more than one word
-      feature_pipeline.GetAdaptationState(filter->adaptation_state);
+      decoder.GetAdaptationState(filter->adaptation_state);
     }
   } else {
     GST_DEBUG_OBJECT(filter, "Less than 0.1 seconds decoded, discarding");
