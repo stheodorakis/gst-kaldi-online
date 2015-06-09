@@ -14,7 +14,6 @@ gi.require_version('Gst', '1.0')
 from gi.repository import GObject, Gst, Gtk, Gdk
 GObject.threads_init()
 Gdk.threads_init()
-
 Gst.init(None)
 
 class DemoApp(object):
@@ -52,29 +51,29 @@ class DemoApp(object):
             sys.exit()	
         self.audioconvert = Gst.ElementFactory.make("audioconvert", "audioconvert")
         self.audioresample = Gst.ElementFactory.make("audioresample", "audioresample")    
-        self.asr = Gst.ElementFactory.make("kaldinnet2onlinedecoder", "asr")
+        self.asr = Gst.ElementFactory.make("kaldigmm2onlinedecoder", "asr")
         self.fakesink = Gst.ElementFactory.make("fakesink", "fakesink")
         
         if self.asr:
-          model_file = "final.mdl"
+          ModelPath="/Users/sth/Development/myProjects/VoiceTel/models/italian/GestureChallenge";
+          model_file = "%s/kaldi.mdl" % ModelPath
           if not os.path.isfile(model_file):
               print >> sys.stderr, "Models not downloaded? Run prepare-models.sh first!"
               sys.exit(1)
-          self.asr.set_property("fst", "HCLG.fst")
-          self.asr.set_property("model", "final.mdl")
-          self.asr.set_property("word-syms", "words.txt")
+          self.asr.set_property("fst", "%s/HCLG.fst" % ModelPath)
+          self.asr.set_property("model", "%s/kaldi.mdl" % ModelPath)
+          self.asr.set_property("word-syms", "%s/words_w.txt" % ModelPath)
           self.asr.set_property("feature-type", "mfcc")
-          self.asr.set_property("mfcc-config", "conf/mfcc.conf")
-          self.asr.set_property("ivector-extraction-config", "conf/ivector_extractor.fixed.conf")
+          self.asr.set_property("mfcc-config", "%s/conf/mfcc.conf" % ModelPath)
+          self.asr.set_property("global-cmvn", "%s/cmvn_train_matsum.ark" % ModelPath)
+          self.asr.set_property("add-deltas", True)
           self.asr.set_property("max-active", 7000)
-          self.asr.set_property("beam", 10.0)
+          self.asr.set_property("beam", 11.0)
           self.asr.set_property("lattice-beam", 6.0)
           self.asr.set_property("do-endpointing", True)
-          self.asr.set_property("endpoint-silence-phones", "1:2:3:4:5:6:7:8:9:10")
-          self.asr.set_property("use-threaded-decoder", False)
-          self.asr.set_property("chunk-length-in-secs", 0.2)
+          self.asr.set_property("endpoint-silence-phones", "1:22")
         else:
-          print >> sys.stderr, "Couldn't create the kaldinnet2onlinedecoder element. "
+          print >> sys.stderr, "Couldn't create the kaldigmm2onlinedecoder element. "
           if os.environ.has_key("GST_PLUGIN_PATH"):
             print >> sys.stderr, "Have you compiled the Kaldi GStreamer plugin?"
           else:
@@ -137,7 +136,4 @@ class DemoApp(object):
 
 if __name__ == '__main__':
   app = DemoApp()
-  Gdk.threads_enter()
   Gtk.main()
-  Gdk.threads_leave()
-
