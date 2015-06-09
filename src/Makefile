@@ -29,7 +29,7 @@ EXTRA_LDLIBS += -L$(FSTROOT)/lib -lkaldi-online2 -lkaldi-lat -lkaldi-decoder -lk
  -lkaldi-gmm -lkaldi-hmm \
  -lkaldi-tree -lkaldi-matrix  -lkaldi-util -lkaldi-base -lkaldi-thread -lkaldi-lm -lfstscript -lkaldi-nnet2 -lkaldi-cudamatrix -lkaldi-ivector
 
-OBJFILES = gstkaldinnet2onlinedecoder.o gstkaldigmm2onlinedecoder.o simple-options-gst.o gst-audio-source.o kaldimarshal.o online-gmm-decoding-ext.o
+OBJFILES = gstkaldigmm2onlinedecoder.o simple-options-gst.o gst-audio-source.o kaldimarshal.o online-gmm-decoding-ext.o
 
 LIBNAME=gstkaldionline2
 
