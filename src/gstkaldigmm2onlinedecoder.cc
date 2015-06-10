@@ -1599,12 +1599,11 @@ gst_kaldigmm2onlinedecoder_load_model(Gstkaldigmm2onlinedecoder * filter,
                                        const GValue * value) {
   if (G_VALUE_HOLDS_STRING(value)) {
     gchar* str = g_value_dup_string(value);
-
     // Check if the model filename is not empty
     if (strcmp(str, "") != 0) {
       // Build objects if needed
       if (!filter->trans_model) {
-        filter->trans_model = new TransitionModel();
+	filter->trans_model = new TransitionModel();
       }
 
       if (!filter->gmm) {
@@ -1614,10 +1613,9 @@ gst_kaldigmm2onlinedecoder_load_model(Gstkaldigmm2onlinedecoder * filter,
       // Make the objects read the new models
       try {
         bool binary;
-        Input ki(filter->model_rspecifier, &binary);
-        filter->trans_model->Read(ki.Stream(), binary);
+	Input ki(str, &binary);
+	filter->trans_model->Read(ki.Stream(), binary);
         filter->gmm->Read(ki.Stream(), binary);
-
         // Only change the parameter if it has worked correctly
         g_free(filter->model_rspecifier);
         filter->model_rspecifier = g_strdup(str);
