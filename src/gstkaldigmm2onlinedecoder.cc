@@ -1840,7 +1840,6 @@ static void gst_kaldigmm2onlinedecoder_finalize(GObject * object) {
   g_free(filter->word_syms_filename);
   g_free(filter->phone_syms_filename);
   delete filter->endpoint_config;
-  delete filter->feature_config;
   delete filter->gmm2_decoding_config;
   delete filter->simple_options;
   if (filter->feature_config) {
