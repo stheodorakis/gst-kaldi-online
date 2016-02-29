@@ -59,6 +59,7 @@ endif
 
 
 $(LIBFILE): $(OBJFILES) $(OBJFILES_NNET)
+
 	$(CXX) -shared -DPIC -o $(LIBFILE) -L$(KALDILIBDIR) $(EXTRA_LDLIBS) $(LDLIBS) $(LDFLAGS) \
 	  $(OBJFILES)
 
